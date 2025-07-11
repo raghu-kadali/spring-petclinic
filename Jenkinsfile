@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        SONARQUBE_ENV = "server-sonar"
+        SONARQUBE_ENV = "server_sonar"
     }
      tools {
         maven 'maven-3.8.9'
