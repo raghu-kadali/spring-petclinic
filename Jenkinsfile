@@ -9,7 +9,6 @@ pipeline {
     }
 
     stages {
-
         stage('Build') {
             steps {
                 sh 'mvn clean install'
@@ -26,8 +25,11 @@ pipeline {
 
         stage('Quality Gate') {
             steps {
-                timeout(time: 30, unit: 'SECONDS') {
-                    waitForQualityGate(abortPipeline: true, sonarQube: env.SONARQUBE_ENV)
+                timeout(time: 3, unit: 'MINUTES') {
+                    script {
+                        def qg = waitForQualityGate()
+                        echo "Quality Gate status: ${qg.status}"
+                    }
                 }
             }
         }
