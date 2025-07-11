@@ -4,7 +4,7 @@ pipeline {
     environment {
         SONARQUBE_ENV = "server_sonar"
     }
-     tools {
+    tools {
         maven 'maven-3.8.9'
     }
 
@@ -26,8 +26,8 @@ pipeline {
 
         stage('Quality Gate') {
             steps {
-                timeout(time: 1, unit: 'MINUTES') {
-                    waitForQualityGate abortPipeline: true
+                timeout(time: 5, unit: 'MINUTES') {
+                    waitForQualityGate(abortPipeline: true, sonarQube: env.SONARQUBE_ENV)
                 }
             }
         }
