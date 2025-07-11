@@ -4,6 +4,9 @@ pipeline {
     environment {
         SONARQUBE_ENV = "server-sonar"
     }
+     tools {
+        maven 'maven-3.8.9'
+    }
 
     stages {
 
