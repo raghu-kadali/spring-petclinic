@@ -35,7 +35,7 @@ pipeline {
                     echo " pushing an image to docker_hub"
                     sh "docker push ${DOCKER_IMAGENAME}:${BUILD_NUMBER}"
                }
-               sh "docker run -d --name springcontainer -p 8080:8080 ${DOCKER_IMAGENAME}:${BUILD_NUMBER}"
+               sh "docker run -d --name springcontainer1 -p 8081:8080 ${DOCKER_IMAGENAME}:${BUILD_NUMBER}"
             }
         }
     }
