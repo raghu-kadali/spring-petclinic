@@ -1,7 +1,7 @@
 FROM ubuntu:22.04
 
 # Step 2 : Add the metadata to the image
-LABEL maintainer="chandu@example.com"
+LABEL maintainer="raghu@123.com"
 LABEL version="1.0"
 LABEL description="A simple Java application using OpenJDK 17"
 
@@ -23,10 +23,10 @@ RUN wget "https://storage.googleapis.com/newbucketforspring/spring-petclinic-3.5
 
 
 # Step 8: Add the user to run the application
-RUN useradd -ms /bin/bash chandu
+RUN useradd -ms /bin/bash raghu
 
 # Step 9: Switch to the non-root user
-USER chandu
+USER raghu
 
 # Step 10: Expose the Application
 EXPOSE 8080
