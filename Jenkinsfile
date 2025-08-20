@@ -1,36 +1,41 @@
 pipeline {
-    agent any
-
+    agent {
+        label 'java_slave'
+    }
     environment {
-        SONARQUBE_ENV = "server_sonar"
+        SONARQUBE_SERVER = 'sonarqube1'
+        DOCKER_IMAGENAME = 'dockerhubraghu/clinic'
     }
-    tools {
-        maven 'maven-3.8.9'
-    }
-
     stages {
-        stage('Build') {
+        stage ('build') {
             steps {
-                sh 'mvn clean install'
+                echo " BUilding an application"
+                sh "mvn clean install" 
             }
         }
-
-        stage('SonarQube Analysis') {
+        stage ('Sonar Analysis') {
             steps {
-                withSonarQubeEnv("${SONARQUBE_ENV}") {
-                    sh 'mvn sonar:sonar -Dsonar.projectKey=fresh'
+                echo "Analysis of Project and building a report"
+                withSonarQubeEnv("${SONARQUBE_SERVER}") {
+                    sh "mvn sonar:sonar -Dsonar.projectKey=docker-spring"
                 }
             }
         }
-
-        stage('Quality Gate') {
+        stage ('Docker build and push') {
+            agent {
+                label 'docker_slave'
+            }
             steps {
-                timeout(time: 3, unit: 'MINUTES') {
-                    script {
-                        def qg = waitForQualityGate()
-                        echo "Quality Gate status: ${qg.status}"
-                    }
-                }
+                echo "Building an application and pushing an image into Docker hub"
+                echo " **************************building an image**********************************"
+                sh "docker build -t ${DOCKER_IMAGENAME}:${BUILD_NUMBER} -f .devcontainer/Dockerfile . "
+                echo " *********************logging into Docker hub****************"
+                withCredentials([usernamePassword(credentialsId: 'docker_creds', usernameVariable: 'DOCKER_CREDS_USR', passwordVariable: 'DOCKER_CREDS_PSW')]) {
+                    sh "echo ${DOCKER_CREDS_PSW} | docker login -u ${DOCKER_CREDS_USR} --password-stdin"
+                    echo " pushing an image to docker_hub"
+                    sh "docker push ${DOCKER_IMAGENAME}:${BUILD_NUMBER}"
+               }
+               sh "docker run -d --name springcontainer -p 8080:8080 ${DOCKER_IMAGENAME}:${BUILD_NUMBER}"
             }
         }
     }
